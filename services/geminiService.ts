@@ -1,6 +1,6 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { FAQ, DiagnosisResult } from '../types';
+import { FAQ, DiagnosisResult, BlogPost } from '../types';
 
 // Helper to get the API client
 const getAiClient = () => {
@@ -122,3 +122,53 @@ export const diagnoseIssue = async (description: string, availableServices: stri
     };
   }
 }
+
+export const generateBlogPost = async (topic: string, businessName: string): Promise<Partial<BlogPost> | null> => {
+  const ai = getAiClient();
+
+  if (!ai) {
+    // Mock fallback
+    return {
+      title: "Expert Tips on " + topic,
+      excerpt: "Here is a great placeholder article about " + topic + ". Connect with us to learn more about our services and how we can help keep your home safe.",
+      category: "General Advice"
+    };
+  }
+
+  const prompt = `
+    Write a blog post entry for a local service business named "${businessName}".
+    Topic: "${topic}".
+    
+    Generate:
+    1. A catchy, SEO-friendly Title.
+    2. A compelling Excerpt (2-3 sentences max) that makes the user want to read more.
+    3. A short Category name (e.g., 'Maintenance', 'Safety', 'Tips').
+
+    Return JSON.
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            title: { type: Type.STRING },
+            excerpt: { type: Type.STRING },
+            category: { type: Type.STRING }
+          },
+          required: ["title", "excerpt", "category"]
+        }
+      }
+    });
+
+    const jsonText = response.text;
+    return JSON.parse(jsonText || '{}') as Partial<BlogPost>;
+  } catch (error) {
+    console.error("Error generating blog post:", error);
+    return null;
+  }
+};

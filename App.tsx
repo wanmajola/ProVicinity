@@ -8,8 +8,9 @@ import {
 import { BookingModal } from './components/BookingModal';
 import { FAQGenerator } from './components/FAQGenerator';
 import { ServiceDiagnoser } from './components/ServiceDiagnoser';
+import { BlogGenerator } from './components/BlogGenerator';
 import { BUSINESS_NAME, BUSINESS_PHONE, BUSINESS_ADDRESS, SERVICES, TESTIMONIALS, BLOG_POSTS } from './constants';
-import { PageView } from './types';
+import { PageView, BlogPost } from './types';
 
 // Icons mapping for dynamic service rendering
 const IconMap: Record<string, React.FC<any>> = {
@@ -22,6 +23,9 @@ const App: React.FC = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [selectedServiceForBooking, setSelectedServiceForBooking] = useState<string | undefined>(undefined);
   const [scrolled, setScrolled] = useState(false);
+  
+  // Blog State
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>(BLOG_POSTS);
 
   // Handle scroll effect for navbar
   useEffect(() => {
@@ -272,14 +276,18 @@ const App: React.FC = () => {
 
   const BlogPage = () => (
     <div className="pt-24 pb-20 container mx-auto px-4">
-      <div className="text-center mb-16">
+      <div className="text-center mb-10">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Expert Tips & Advice</h1>
         <p className="text-xl text-gray-600">Maintenance guides and industry news to keep your home running smoothly.</p>
       </div>
+
+      <div className="flex justify-center mb-8">
+        <BlogGenerator onPostGenerated={(newPost) => setBlogPosts([newPost, ...blogPosts])} />
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {BLOG_POSTS.map((post) => (
-          <article key={post.id} className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all border border-gray-100 overflow-hidden group">
+        {blogPosts.map((post) => (
+          <article key={post.id} className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all border border-gray-100 overflow-hidden group animate-in fade-in zoom-in duration-300">
             <div className="h-48 overflow-hidden">
               <img 
                 src={post.imageUrl} 

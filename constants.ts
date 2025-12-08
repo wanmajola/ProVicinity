@@ -1,6 +1,6 @@
 import { ServiceItem, Testimonial, BlogPost } from './types';
 
-export const BUSINESS_NAME = "Elite Plumbers & HVAC";
+export const BUSINESS_NAME = "ProVicinity";
 export const BUSINESS_PHONE = "(555) 123-4567";
 export const BUSINESS_EMAIL = "contact@elitehvac-local.com";
 export const BUSINESS_ADDRESS = "123 Market St, Springfield, IL";
